@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # For production container we do NOT mount the source (use built image)
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+
+# For local development you may prefer a compose override file that mounts
+# the source and runs `npm run dev`. Example (not included here):
+#   docker-compose.override.yml
+# which can contain a service that mounts `.:/workdir` and uses `npm run dev`.
