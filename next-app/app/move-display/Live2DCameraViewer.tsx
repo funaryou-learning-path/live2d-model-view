@@ -44,10 +44,31 @@ export default function Live2DCameraViewer({ modelPath }: Live2DCameraViewerProp
     // モデル切替用の state
     const [selectedModelPath, setSelectedModelPath] = useState<string>(modelPath);
     // 利用可能なモデルのリスト
-    const modelOptions = [
-        { label: 'Hiyori', path: '/live2dModel/hiyori_free_jp/runtime/hiyori_free_t08.model3.json' },
-        { label: 'Miku', path: '/live2dModel/miku/runtime/miku.model3.json' },
-    ];
+    // 利用可能なモデルのリスト
+    const [modelOptions, setModelOptions] = useState<{ label: string; path: string }[]>([
+        { label: 'Default', path: modelPath },
+    ]);
+
+    // APIからモデル一覧を取得
+    useEffect(() => {
+        const fetchModels = async () => {
+            try {
+                const res = await fetch('/api/models');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.models && Array.isArray(data.models) && data.models.length > 0) {
+                        setModelOptions(data.models);
+
+                        // 現在選択中のパスがリストにあるか確認し、なければリストの最初のものを選択する等の処理も可能だが
+                        // ここではリストの更新のみを行う
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch models:', error);
+            }
+        };
+        fetchModels();
+    }, []);
 
     // 共通スケール係数
     const SCALE_FACTOR = 0.8;
